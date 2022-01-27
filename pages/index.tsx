@@ -3,9 +3,14 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useEffect } from 'react'
 import styles from '../styles/Home.module.css'
+import { createClient } from '@supabase/supabase-js'
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 const Home: NextPage = () => {
   useEffect(() => {
+    supabase.from('logs').insert({ text: 'UI hit' }).then(console.log);
     fetch('/api/hello').then(response => response.json()).then(console.log);
   }, []);
 
