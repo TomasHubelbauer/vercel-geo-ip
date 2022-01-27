@@ -9,7 +9,10 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
     const country = request.headers.get('X-Vercel-IP-Country');
     const region = request.headers.get('X-Vercel-IP-Country-Region');
     const city = request.headers.get('X-Vercel-IP-City');
-    supabase.from('logs').insert({ text: 'middleware hit', url: request.url, country, region, city }).then(console.log);
+    const ip = request.ip;
+    const xRealIp = request.headers.get('X-Real-IP');
+    const xForwardedFor = request.headers.get('X-Forwarded-For');
+    supabase.from('logs').insert({ text: 'middleware hit', url: request.url, country, region, city, ip, x_real_ip: xRealIp, x_forwarded_for: xForwardedFor }).then(console.log);
     console.log('middleware hit', request.url);
   }
 
