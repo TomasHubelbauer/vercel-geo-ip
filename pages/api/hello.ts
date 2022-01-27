@@ -6,7 +6,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 type Data = { name: string };
 
-export default function handler(request: NextApiRequest, response: NextApiResponse<Data>) {
+export default async function handler(request: NextApiRequest, response: NextApiResponse<Data>) {
   const country = request.rawHeaders[request.rawHeaders.indexOf('x-vercel-ip-country') + 1];
   const region = request.rawHeaders[request.rawHeaders.indexOf('x-vercel-ip-country-region') + 1];
   const city = request.rawHeaders[request.rawHeaders.indexOf('x-vercel-ip-city') + 1];
@@ -15,19 +15,10 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
   const region2 = request.headers['x-vercel-ip-country-region'];
   const city2 = request.headers['x-vercel-ip-city'];
 
-  console.log({
-    country, region, city,
-    countryType: typeof country, countryArray: Array.isArray(country),
-    regionType: typeof country, regionArray: Array.isArray(country),
-    cityType: typeof country, cityArray: Array.isArray(country),
+  console.log({ country, region, city, country2, region2, city2 });
 
-    country2, region2, city2,
-    country2Type: typeof country, country2Array: Array.isArray(country),
-    region2Type: typeof country, region2Array: Array.isArray(country),
-    city2Type: typeof country, city2Array: Array.isArray(country),
-  });
-
-  supabase.from('logs').insert({ text: 'API hit', url: request.url }).then(console.log);
+  // Seems like async/await might be a must, .then causes https://github.com/vercel/community/discussions/156
+  await supabase.from('logs').insert({ text: 'API hit', url: request.url });
   console.log('API hit', request.url);
   response.status(200).json({ name: 'John Doe' })
 }
