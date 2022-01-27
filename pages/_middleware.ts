@@ -6,7 +6,10 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (request.nextUrl.pathname === '/api/hello') {
-    supabase.from('logs').insert({ text: 'middleware hit', url: request.url }).then(console.log);
+    const country = request.headers.get('X-Vercel-IP-Country');
+    const region = request.headers.get('X-Vercel-IP-Country-Region');
+    const city = request.headers.get('X-Vercel-IP-City');
+    supabase.from('logs').insert({ text: 'middleware hit', url: request.url, country, region, city }).then(console.log);
     console.log('middleware hit', request.url);
   }
 
