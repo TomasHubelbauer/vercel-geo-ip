@@ -10,7 +10,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 const Home: NextPage = () => {
   useEffect(() => {
-    supabase.from('logs').insert({ text: 'UI hit' }).then(console.log);
+    supabase.from('logs').insert({ text: 'UI hit', url: location.href }).then(console.log);
     fetch('/api/hello').then(response => response.json()).then(console.log);
   }, []);
 

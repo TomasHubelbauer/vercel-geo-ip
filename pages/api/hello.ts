@@ -7,7 +7,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 type Data = { name: string };
 
 export default function handler(request: NextApiRequest, response: NextApiResponse<Data>) {
-  supabase.from('logs').insert({ text: 'API hit' }).then(console.log);
+  supabase.from('logs').insert({ text: 'API hit', url: request.url }).then(console.log);
   console.log('API hit', request.url);
   response.status(200).json({ name: 'John Doe' })
 }

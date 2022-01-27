@@ -6,7 +6,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
   if (request.nextUrl.pathname === '/api/hello') {
-    supabase.from('logs').insert({ text: 'middleware hit' }).then(console.log);
+    supabase.from('logs').insert({ text: 'middleware hit', url: request.url }).then(console.log);
     console.log('middleware hit', request.url);
   }
 
