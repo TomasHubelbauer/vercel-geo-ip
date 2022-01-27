@@ -1,34 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Vercel Geo IP
 
-## Getting Started
+Vercel offers geo IP headers to accounts using the Pro or Teams tier. Hobby
+tier (free) cannot be upgraded to Pro or Teams, so I have created a new team
+and am using the free 14 day trial to play around with these headers to see
+how useful they would be to me and if they are worth the upgrade.
 
-First, run the development server:
+I am tracking a few basic things:
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+- A hit to the middleware
+- A hit to an API route
+- A UI hit from the client
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The order in which they should happen is UI, middleware, API. The database used
+to store this data is Supabase. I am tracking the geo IP headers of each request
+as well as the possible IP values provided by various Node and Vercel APIs to
+see which address Vercel uses to fetch the geo IP data:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- `request.ip` in the middleware
+- `request.socket.remoteAddress` in the API route handler
+- `X-Real-IP` and `X-Forwarded-For` in both
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+I think Vercel uses `X-Forwarded-For` for the geo IP stuff. Vercel uses AWS for
+the free hosting of your deployments, so some of the IPs showing up are AWS from
+the region used to host the app. In my case, this is the AWS Germany IP range,
+which can be verified using https://ipinfo.io, however, interestingly, I cannot
+find those AWS IPs identified as such by IP Info in the AWS IP ranges JSON at
+https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html. I am not sure
+why this is.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## To-Do
 
-## Learn More
+### Track `request.socket.localAddress` as remote address is always localhost
 
-To learn more about Next.js, take a look at the following resources:
+I think I got the wrong end of the two.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Decypher hits from the middleware to the API routes, how they show up
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+In some of my projects, my middleware is making calls to the API route handlers
+and I am curious to see if I can still get the original IP (my IP) in this
+scenario of if I'll just see an AWS to AWS call being made with no obvious
+trace of the originator IP.
